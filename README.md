@@ -1,6 +1,9 @@
 ansible-golang
 =========
 
+[![Build Status](https://travis-ci.org/ernestas-poskus/ansible-golang.svg?branch=master)](https://travis-ci.org/ernestas-poskus/ansible-golang)
+[![BSD License](http://img.shields.io/badge/license-BSD-blue.svg)](http://opensource.org/licenses/BSD-3-Clause)
+
 Ansible role for managing Golang installtion from golang.org.
 
 Installation
