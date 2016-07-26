@@ -1,0 +1,39 @@
+---
+# defaults file for ansible-golang
+golang_role_release: '0.0.1'
+
+# Golang version to install
+golang_version: '1.6.2'
+
+# Golang platform
+golang_platform: 'linux-amd64'
+
+# Golang name with installed version
+golang_name: 'go{{golang_version}}'
+
+# Golang install directory
+golang_install_directory: '/opt/{{golang_name}}'
+
+# Golang soft link
+golang_link_to: '/opt/go'
+
+# Golang root for GOROOT env variable
+golang_root: '{{golang_install_directory}}/go'
+
+# Golang path for GOPATHenv variable
+golang_path: '/usr/local/golang_packages'
+
+# Golang owner
+golang_owner: 'golang'
+
+# Golang group
+golang_group: 'golang'
+
+# Golang directory mode, others than owner and group cannot access Golang
+golang_mode: 0750
+
+# Golang compiled binaries path for GOBIN env variable
+golang_packages_bin: "{{golang_path}}/bin"
+
+# Golang packages (GOPATH env variable) directory mode, others than owner and group cannot access Golang
+golang_packages_directory_mode: 0770

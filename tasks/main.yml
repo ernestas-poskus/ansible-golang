@@ -1,0 +1,61 @@
+---
+# tasks file for ansible-golang
+- name: Creating role group
+  group: >-
+    name={{golang_group}}
+    state=present
+
+- name: Creating role user
+  user: >-
+    name={{golang_owner}}
+    group={{golang_group}}
+    state=present
+
+- name: Downloading golang archive
+  get_url: >
+    url={{golang_tgz_url}}
+    dest=/tmp/{{golang_tgz}}
+    mode=0644
+
+- name: mkdir golang install directory
+  file: >-
+    state=directory
+    path={{golang_install_directory}}
+    owner={{golang_owner}}
+    group={{golang_group}}
+    mode={{golang_mode}}
+
+- name: mkdir golang packages directory
+  file: >-
+    state=directory
+    path={{golang_path}}
+    owner={{golang_owner}}
+    group={{golang_group}}
+    mode={{golang_packages_directory_mode}}
+    recurse=true
+
+- name: unarchive golang
+  unarchive: >
+    copy=no
+    src=/tmp/{{golang_tgz}}
+    dest={{golang_install_directory}}
+    creates={{golang_install_directory}}/go/bin/go
+    owner={{golang_owner}}
+    group={{golang_group}}
+
+- name: linking golang to /opt/go
+  file: >-
+    src={{golang_root}}
+    dest={{golang_link_to}}
+    owner={{golang_owner}}
+    group={{golang_group}}
+    mode={{golang_mode}}
+    state=link
+
+- name: set golang environment variables
+  template: >
+    src=golang.sh.j2
+    dest=/etc/profile.d/golang.sh
+    owner={{golang_owner}}
+    group={{golang_group}}
+    mode=0640

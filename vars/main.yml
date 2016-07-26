@@ -1,0 +1,4 @@
+---
+# vars file for ansible-golang
+golang_tgz: '{{golang_name}}.{{golang_platform}}.tar.gz'
+golang_tgz_url: 'https://storage.googleapis.com/golang/{{golang_tgz}}'
