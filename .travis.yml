@@ -2,34 +2,41 @@
 language: python
 python: "2.7"
 
-# Use the new container infrastructure
-sudo: false
+env:
+  - ANSIBLE_VERSION=2.0.0
+  - ANSIBLE_VERSION=latest
 
-# Install ansible
-addons:
-  apt:
-    packages:
-    - python-pip
+before_install:
+  - sudo apt-get update -qq
 
 install:
-  # Install ansible
-  - pip install ansible
-
-  # Check ansible version
-  - ansible --version
-
-  # Create ansible.cfg with correct roles_path
-  - printf '[defaults]\nroles_path=../' >ansible.cfg
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
+  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
 
 script:
   # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  - "ansible-playbook -i localhost, tests/test.yml --syntax-check"
+
+  # Basic role install
+  - "ansible-playbook -i localhost, tests/test.yml --connection=local --sudo"
+
   # Idempotency check
   - >
-    ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+    ansible-playbook -i localhost, tests/test.yml --connection=local --sudo
     | grep -q 'changed=0.*failed=0'
     && (echo 'Idempotency: PASS' && exit 0)
     || (echo 'Idempotency: FAIL' && exit 1)
+
+  - >
+    [ -d "/opt/go1.6.2" ] && echo "Golang directory exist" && exit 0 || echo "Golang directory does not exist" && exit 1
+  - >
+    [ -d "/usr/local/golang_packages" ] && echo "Golang packages directory exist" && exit 0 || echo "Golang packages directory does not exist" && exit 1
+  - >
+    [ -n "$GOPATH" ] && echo "GOPATH exist" && exit 0 || echo "GOPATH does not exist" && exit 1
+  - >
+    [ -n "$GOBIN" ] && echo "GOBIN exist" && exit 0 || echo "GOBIN does not exist" && exit 1
+  - >
+    echo $PATH | grep -qi golang_packages && echo "Golang compiled packages in PATH" && exit 0 || echo "Golang compiled packages not in PATH" && exit 1
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
